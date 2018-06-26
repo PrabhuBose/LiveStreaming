@@ -9,43 +9,37 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
 
 import com.intigral.mobile.android.livestreaming.R;
 
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback,
-        MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl {
+        MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl, View.OnClickListener {
 
     private MediaPlayer mediaPlayer;
     private SurfaceHolder vidHolder;
     private SurfaceView vidSurface;
     private MediaController mediaController;
     private Handler handler = new Handler();
-    private RelativeLayout videoLayout;
+    private boolean fullScreen = true;
+    private DisplayMetrics displayMetrics;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        findViewById(R.id.fullScreen).setOnClickListener(this);
         mediaController = new MediaController(this);
-        videoLayout = findViewById(R.id.videoLayout);
-
-        DisplayMetrics dm = new DisplayMetrics();
-        this.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int height = dm.heightPixels;
-        int width = dm.widthPixels;
-
-        int left = videoLayout.getLeft();
-        int top = videoLayout.getTop();
-        int right = left + (width / 4);
-        int bottom = top + (height / 4);
-
-        videoLayout.layout(left, top, right, bottom);
-
         vidSurface = findViewById(R.id.surfView);
         vidHolder = vidSurface.getHolder();
+
+        displayMetrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
         vidHolder.addCallback(this);
     }
 
@@ -168,5 +162,30 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     public boolean onTouchEvent(MotionEvent event) {
         mediaController.show();
         return false;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.fullScreen:
+                if(fullScreen){
+                    int height = displayMetrics.heightPixels / 2;
+                    int width = displayMetrics.widthPixels / 2;
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+                    params.addRule(RelativeLayout.CENTER_IN_PARENT);
+                    vidSurface.setLayoutParams(params);
+                }else {
+                    int height = displayMetrics.heightPixels;
+                    int width = displayMetrics.widthPixels;
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+                    params.addRule(RelativeLayout.CENTER_IN_PARENT);
+                    vidSurface.setLayoutParams(params);
+                }
+
+                fullScreen = !fullScreen;
+
+                break;
+        }
+
     }
 }
