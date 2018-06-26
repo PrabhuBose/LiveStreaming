@@ -1,6 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <!--<color name="colorPrimary">#F50057</color>-->
+    <!--<color name="colorPrimaryDark">#C51162</color>-->
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="windowBackground">#FFFFFF</color>
+    <color name="navigationBarColor">#000000</color>
+    <!--<color name="colorAccent">#FF80AB</color>-->
+
+
+    <color name="colorPrimary">#05152C</color>
+    <color name="colorPrimaryDark">#255BC1</color>
+    <color name="colorAccent">@color/white_gray</color>
+    <color name="colorPrimaryLight">#80000000</color>
+    <color name="translucent_white">#80ffffff</color>
+    <color name="translucent_black">#80000000</color>
+
+    <color name="f_navy_blue">#122c58</color>
+    <color name="f_light_gray">#8694ab</color>4
+
+    <color name="transluscent_bg">#80000000</color>
+    <color name="background">#f5f5f5</color>
+    <color name="binnus_background">#ebf0f0</color>
+    <color name="indicator_clr">#bcc3c9</color>
+    <color name="home_page_banner">#d6dadd</color>
+    <color name="home_page_banner_new">#292f34</color>
+    <color name="error_popup_bg">#DA5F6A</color>
+
+    <color name="colorPrimaryDark_transparent">#9000a382</color>
+    <color name="white_gray_lighter">#dedede</color>
+    <color name="recorder_bg">#F4511E</color>
+    <color name="album_title">#4c4c4c</color>
+    <color name="grey">#9b9ea7</color>
+    <color name="white">#FFFFFF</color>
+    <color name="facebook_color">#3B5998</color>
+    <color name="google_plus_color">#d34836</color>
+    <color name="black">#000000</color>
+    <color name="white_gray">#e5e5e5</color>
+    <color name="blue">#0892d0</color>
+    <color name="iron">#e5e5e5</color>
+    <color name="primary">#2196F3</color>
+    <color name="danger">#F44336</color>
+    <color name="red_orange">#e0301e</color>
+    <color name="time_color">#FF2D55</color>
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FF5722</color>
+    <color name="hint_clr">#808080</color>
+    <color name="info">#00BCD4</color>
+    <color name="violet">#9C27B0</color>
+    <color name="purple">#673AB7</color>
+    <color name="indigo">#3F51B5</color>
+    <color name="teal">#009688</color>
+    <color name="green">#8BC34A</color>
+    <color name="approve">#40c055</color>
+    <color name="orange">#FF9800</color>
+    <color name="slate">#607D8B</color>
+    <color name="clr_new">#D84315</color>
+    <color name="clr_in_progress">#FF9800</color>
+    <color name="clr_success">#009688</color>
+    <color name="clr_declined">#F44336</color>
+    <color name="clr_awaiting">#00BCD4</color>
+    <color name="clr_pending">#7E57C2</color>
+    <color name="clr_blacklist">#444444</color>
+    <color name="clr_custom">#2196F3</color>
+    <color name="dark_gray">#666666</color>
+    <color name="gray_new">#cccccc</color>
+    <color name="red_new">#BA0303</color>
+
+    <color name="color_shadow">#BDBDBD</color>
+
+    <color name="color_production">#D5FFFF</color>
+    <color name="color_reservation">#60D2FF</color>
+    <color name="color_daily_visits">#74B6FF</color>
+    <color name="color_settings">#03467A</color>
+    <color name="color_ads_history">#5FD2FF</color>
+    <color name="color_waseet_pdf">#EC5C53</color>
+    <color name="color_rete_card">#142344</color>
+    <color name="color_messages">#51CADB</color>
+    <color name="color_notifications">#238CC3</color>
+    <color name="color_magazine_dummy">#60D0C2</color>
+    <color name="color_my_profile">#F18352</color>
+
+
+    <color name="def_msg_bg">#a9f9c2</color>
+    <color name="def_msg_text_color">#40f155</color>
+
+
 </resources>
