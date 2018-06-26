@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by Prabhu on 6/26/18 LiveStreaming.
  */
-public class HomeTeamModel implements Serializable {
+public class TeamPlayerLineUpModel implements Serializable {
 
     private String homeTeamPlayerName;
     private String homeTeamPlayerRole;

@@ -1,4 +1,4 @@
-package ae.brandimpact.teleport.api;
+package com.intigral.mobile.android.livestreaming.api;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,12 +7,13 @@ import android.net.NetworkInfo;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.intigral.mobile.android.livestreaming.R;
+import com.intigral.mobile.android.livestreaming.interfaces.IServiceInvokerCallback;
+import com.intigral.mobile.android.livestreaming.utils.StreamingUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,31 +21,21 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import ae.brandimpact.teleport.R;
-import ae.brandimpact.teleport.helper.CustomProgressDialog;
-import ae.brandimpact.teleport.helper.TelePortUtil;
-import ae.brandimpact.teleport.interfaces.IServiceInvokerCallback;
-
+/**
+ * Created by Prabhu on 6/26/18 LiveStreaming.
+ */
 public class InvokeVolleyService {
-    boolean mIsPost;
-    String mMethod;
-    Map mRequestParameters;
-    IServiceInvokerCallback mCallback;
-    Context mCtx;
-    String ServiceResponse;
-    boolean progressDialog;
-    int REQUEST_TYPE = 0;
+    private IServiceInvokerCallback mCallback;
+    private Context mCtx;
+    private String ServiceResponse;
+    private int REQUEST_TYPE = 0;
 
 
-    public InvokeVolleyService(Context ctx, int REQUEST_TYPE, String method,
-                               HashMap requestParameters, IServiceInvokerCallback callback,  boolean progressDialog) {
+    public InvokeVolleyService(Context ctx, int REQUEST_TYPE, IServiceInvokerCallback callback) {
         super();
         mCtx = ctx;
-        mMethod = method;
-        mRequestParameters = requestParameters;
         mCallback = callback;
         this.REQUEST_TYPE = REQUEST_TYPE;
-        this.progressDialog = progressDialog;
 
         callService();
     }
@@ -53,20 +44,16 @@ public class InvokeVolleyService {
 
         if (isOnline()) {
 
-            if (progressDialog)
-                CustomProgressDialog.showProgressDailog(mCtx);
-            TelePortUtil.showLog("URL : ", getServiceUrl() +  mMethod);
-            TelePortUtil.showLog("Parameters : ", "" + mRequestParameters);
+            StreamingUtils.showLog("URL : ", getServiceUrl());
             JSONObject jsonObject = new JSONObject();
-            StringRequest postRequest = new StringRequest(REQUEST_TYPE,getServiceUrl() + mMethod,
+            StringRequest postRequest = new StringRequest(REQUEST_TYPE, getServiceUrl(),
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            CustomProgressDialog.dismissProgressDailog();
-                            TelePortUtil.showLog(" Json Response : ", "" + response);
+                            StreamingUtils.showLog(" Json Response : ", "" + response);
                             ServiceResponse = response;
                             try {
-                                mCallback.onRequestCompleted(ServiceResponse, mMethod);
+                                mCallback.onRequestCompleted(ServiceResponse);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -75,13 +62,12 @@ public class InvokeVolleyService {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            CustomProgressDialog.dismissProgressDailog();
                             error.printStackTrace();
-                            TelePortUtil.showLog(" Json ERROR : ", String.valueOf(error));
+                            StreamingUtils.showLog(" Json ERROR : ", String.valueOf(error));
 
                             try {
                                 ServiceResponse = error.toString();
-                                mCallback.onRequestCompleted(ServiceResponse, mMethod);
+                                mCallback.onRequestCompleted(ServiceResponse);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -89,15 +75,15 @@ public class InvokeVolleyService {
                     }
             ) {
                 @Override
-                protected Map<String,String> getParams(){
+                protected Map<String, String> getParams() {
 
-                    return mRequestParameters;
+                    return null;
                 }
 
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String,String> params = new HashMap<String, String>();
-                    params.put("Content-Type","application/x-www-form-urlencoded");
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("Content-Type", "application/x-www-form-urlencoded");
                     return params;
                 }
             };
@@ -123,33 +109,23 @@ public class InvokeVolleyService {
 
     private String getServiceUrl() {
         if (mCtx != null) {
-            String serviceUri = mCtx.getString(R.string.api_url);
-//            AnotherUtil.showLog("", "API URL:" + serviceUri);
-            return serviceUri;
+            return mCtx.getString(R.string.api_url);
 
         } else {
-            TelePortUtil.showLog("in ServiceClient.java", "In method getServiceUrl, Context is null");
+            StreamingUtils.showLog("in ServiceClient.java", "In method getServiceUrl, Context is null");
             return "";
         }
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) mCtx.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        NetworkInfo netInfo = null;
+        if (cm != null) {
+            netInfo = cm.getActiveNetworkInfo();
+        }
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-    private JSONObject GetCustomErrorJSON(String errorMsg) {
-        try {
-            JSONObject errorJSON = new JSONObject();
-            errorJSON.put("IsSuccess", false);
-            errorJSON.put("Error", errorMsg);
 
-            return errorJSON;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }
