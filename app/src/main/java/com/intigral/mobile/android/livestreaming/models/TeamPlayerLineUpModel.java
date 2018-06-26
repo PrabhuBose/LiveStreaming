@@ -1,48 +1,32 @@
 package com.intigral.mobile.android.livestreaming.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Prabhu on 6/26/18 LiveStreaming.
  */
 public class TeamPlayerLineUpModel implements Serializable {
 
-    private String homeTeamPlayerName;
-    private String homeTeamPlayerRole;
+    List<AwayTeamModel> awayTeamModelList = new ArrayList<>();
 
-    private String awayTeamPlayerName;
-    private String awayTeamPlayerRole;
+    List<HomeTeamModel> homeTeamModelList = new ArrayList<>();
 
 
-    public String getHomeTeamPlayerName() {
-        return homeTeamPlayerName;
+    public List<AwayTeamModel> getAwayTeamModelList() {
+        return awayTeamModelList;
     }
 
-    public void setHomeTeamPlayerName(String homeTeamPlayerName) {
-        this.homeTeamPlayerName = homeTeamPlayerName;
+    public void setAwayTeamModelList(List<AwayTeamModel> awayTeamModelList) {
+        this.awayTeamModelList = awayTeamModelList;
     }
 
-    public String getHomeTeamPlayerRole() {
-        return homeTeamPlayerRole;
+    public List<HomeTeamModel> getHomeTeamModelList() {
+        return homeTeamModelList;
     }
 
-    public void setHomeTeamPlayerRole(String homeTeamPlayerRole) {
-        this.homeTeamPlayerRole = homeTeamPlayerRole;
-    }
-
-    public String getAwayTeamPlayerName() {
-        return awayTeamPlayerName;
-    }
-
-    public void setAwayTeamPlayerName(String awayTeamPlayerName) {
-        this.awayTeamPlayerName = awayTeamPlayerName;
-    }
-
-    public String getAwayTeamPlayerRole() {
-        return awayTeamPlayerRole;
-    }
-
-    public void setAwayTeamPlayerRole(String awayTeamPlayerRole) {
-        this.awayTeamPlayerRole = awayTeamPlayerRole;
+    public void setHomeTeamModelList(List<HomeTeamModel> homeTeamModelList) {
+        this.homeTeamModelList = homeTeamModelList;
     }
 }

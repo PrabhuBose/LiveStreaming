@@ -16,8 +16,8 @@ import com.intigral.mobile.android.livestreaming.interfaces.IServiceInvokerCallb
 import com.intigral.mobile.android.livestreaming.utils.StreamingUtils;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,15 +43,23 @@ public class InvokeVolleyService {
     private void callService() {
 
         if (isOnline()) {
-
             StreamingUtils.showLog("URL : ", getServiceUrl());
-            JSONObject jsonObject = new JSONObject();
             StringRequest postRequest = new StringRequest(REQUEST_TYPE, getServiceUrl(),
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            StreamingUtils.showLog(" Json Response : ", "" + response);
-                            ServiceResponse = response;
+                            String utf8_response;
+
+                            try {
+                                byte ptext[] = response.getBytes("ISO-8859-1");
+                                utf8_response = new String(ptext, "UTF-8");
+                            } catch (UnsupportedEncodingException e) {
+                                utf8_response = response;
+                                e.printStackTrace();
+                            }
+
+
+                            ServiceResponse = utf8_response;
                             try {
                                 mCallback.onRequestCompleted(ServiceResponse);
                             } catch (JSONException e) {

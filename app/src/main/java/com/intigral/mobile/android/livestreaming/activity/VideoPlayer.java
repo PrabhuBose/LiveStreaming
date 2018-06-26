@@ -1,24 +1,41 @@
 package com.intigral.mobile.android.livestreaming.activity;
 
+import android.app.Dialog;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.intigral.mobile.android.livestreaming.R;
+import com.intigral.mobile.android.livestreaming.adapter.PlayersAdapter;
+import com.intigral.mobile.android.livestreaming.api.StreamingApis;
+import com.intigral.mobile.android.livestreaming.constants.StreamingConstants;
+import com.intigral.mobile.android.livestreaming.interfaces.IServiceInvokerCallback;
+import com.intigral.mobile.android.livestreaming.models.TeamPlayerLineUpModel;
+import com.intigral.mobile.android.livestreaming.parser.JsonParser;
+import com.intigral.mobile.android.livestreaming.utils.StreamingUtils;
+
+import org.json.JSONException;
+
+import java.io.UnsupportedEncodingException;
 
 public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Callback,
         MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl, View.OnClickListener,
-        MediaPlayer.OnInfoListener, MediaPlayer.OnSeekCompleteListener {
+        MediaPlayer.OnInfoListener, MediaPlayer.OnSeekCompleteListener, IServiceInvokerCallback {
 
     private MediaPlayer mediaPlayer;
     private SurfaceHolder vidHolder;
@@ -28,7 +45,10 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
     private boolean fullScreen = true;
     private DisplayMetrics displayMetrics;
     private int seekTime;
-    private ProgressBar progressBar;
+    private ProgressBar progressBar, dialogProgressBar;
+    private TeamPlayerLineUpModel teamPlayerLineUpModel;
+    private PlayersAdapter playersAdapter;
+    private RecyclerView recyclerView;
 
 
     @Override
@@ -39,6 +59,7 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
         seekTime = getIntent().getExtras().getInt("seek_time");
 
         findViewById(R.id.fullScreen).setOnClickListener(this);
+        findViewById(R.id.overLay).setOnClickListener(this);
         mediaController = new MediaController(this);
         vidSurface = findViewById(R.id.surfView);
         progressBar = findViewById(R.id.progressBar);
@@ -117,6 +138,7 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
 
     @Override
     public void start() {
+        progressBar.setVisibility(View.GONE);
         mediaPlayer.start();
     }
 
@@ -194,10 +216,12 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
                     params.addRule(RelativeLayout.CENTER_IN_PARENT);
                     vidSurface.setLayoutParams(params);
                 }
-
                 fullScreen = !fullScreen;
-
                 break;
+            case R.id.overLay:
+                playersOverlay();
+                break;
+
         }
 
     }
@@ -219,5 +243,70 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
     @Override
     public void onSeekComplete(MediaPlayer mediaPlayer) {
         progressBar.setVisibility(View.VISIBLE);
+    }
+
+
+    private void playersOverlay() {
+
+        final Dialog dialog = new Dialog(this, R.style.Theme_Dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setContentView(R.layout.players_overlay);
+        teamPlayerLineUpModel = new TeamPlayerLineUpModel();
+        dialogProgressBar = dialog.findViewById(R.id.progressBar);
+        dialogProgressBar.setVisibility(View.VISIBLE);
+
+
+        if (teamPlayerLineUpModel.getHomeTeamModelList().size() == 0 ||
+                teamPlayerLineUpModel.getAwayTeamModelList().size() == 0)
+            getPlayersDetails();
+
+        recyclerView = dialog.findViewById(R.id.playerList);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(mLayoutManager);
+
+        dialog.findViewById(R.id.homeTam).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playersAdapter = new PlayersAdapter("home", teamPlayerLineUpModel);
+                recyclerView.setAdapter(playersAdapter);
+                playersAdapter.notifyDataSetChanged();
+            }
+        });
+
+        dialog.findViewById(R.id.awayTeam).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playersAdapter = new PlayersAdapter("away", teamPlayerLineUpModel);
+                recyclerView.setAdapter(playersAdapter);
+                playersAdapter.notifyDataSetChanged();
+            }
+        });
+
+
+
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.show();
+    }
+
+
+    private void getPlayersDetails() {
+        try {
+            StreamingApis.getTeamLineUpData(this, StreamingUtils.getRequest(StreamingConstants.GET), this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestCompleted(String response) throws JSONException {
+        teamPlayerLineUpModel = JsonParser.parseHomeTeamResponse(response);
+        dialogProgressBar.setVisibility(View.GONE);
+        playersAdapter = new PlayersAdapter("home", teamPlayerLineUpModel);
+        recyclerView.setAdapter(playersAdapter);
+        playersAdapter.notifyDataSetChanged();
     }
 }

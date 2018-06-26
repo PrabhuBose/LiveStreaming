@@ -12,4 +12,7 @@
 
     <string name="message">Please enter the milli seconds to play from.</string>
     <string name="edit_Text_hint">Enter MilliSec</string>
+
+    <string name="home_team">Home Team</string>
+    <string name="away_team">Away Team</string>
 </resources>

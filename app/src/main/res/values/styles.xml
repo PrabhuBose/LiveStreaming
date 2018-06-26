@@ -10,22 +10,16 @@
 
 
     <style name="AppTheme_no_actionbar" parent="Theme.AppCompat.Light.NoActionBar">
-
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="android:windowBackground">@android:color/white</item>
-
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowContentOverlay">@null</item>
-
         <item name="colorControlNormal">@color/white</item>
         <item name="colorControlActivated">@color/white</item>
         <item name="colorControlHighlight">@color/white</item>
         <item name="android:textColorHint">@color/white</item>
-
         <item name="colorAccent">@color/white</item>
-
-
     </style>
 
     <style name="Theme.AppCompat.Light.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.Light">
@@ -33,14 +27,22 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-
         <item name="colorAccent">@color/orange</item>
         <item name="colorControlNormal">@color/white</item>
         <item name="colorControlActivated">@color/white</item>1
         <item name="colorControlHighlight">@color/white</item>
         <item name="android:textColorHint">@color/white</item>
-
-
     </style>
+
+    <style name="Theme_Dialog" parent="android:Theme.Holo.Light.Dialog">
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
+
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_left</item>
+        <item name="android:windowExitAnimation">@anim/slide_right</item>
+    </style>
+
 
 </resources>
