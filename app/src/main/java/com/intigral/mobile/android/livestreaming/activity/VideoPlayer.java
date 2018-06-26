@@ -15,7 +15,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -30,8 +29,6 @@ import com.intigral.mobile.android.livestreaming.parser.JsonParser;
 import com.intigral.mobile.android.livestreaming.utils.StreamingUtils;
 
 import org.json.JSONException;
-
-import java.io.UnsupportedEncodingException;
 
 public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Callback,
         MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl, View.OnClickListener,
@@ -49,6 +46,7 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
     private TeamPlayerLineUpModel teamPlayerLineUpModel;
     private PlayersAdapter playersAdapter;
     private RecyclerView recyclerView;
+    private int pauseLength = 0;
 
 
     @Override
@@ -65,7 +63,7 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
         vidHolder = vidSurface.getHolder();
-
+        mediaPlayer = new MediaPlayer();
         displayMetrics = new DisplayMetrics();
         this.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
@@ -94,7 +92,7 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
 
         try {
-            mediaPlayer = new MediaPlayer();
+
             mediaPlayer.setOnInfoListener(this);
             mediaPlayer.setOnSeekCompleteListener(this);
             mediaPlayer.setDisplay(vidHolder);
@@ -121,13 +119,20 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
     @Override
     protected void onPause() {
         super.onPause();
-        mediaPlayer.pause();
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
+            pauseLength = mediaPlayer.getCurrentPosition();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        mediaPlayer.start();
+        if (mediaPlayer != null) {
+            mediaPlayer.seekTo(pauseLength);
+            mediaPlayer.start();
+        }
+
     }
 
     @Override
@@ -285,7 +290,6 @@ public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Call
                 playersAdapter.notifyDataSetChanged();
             }
         });
-
 
 
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
