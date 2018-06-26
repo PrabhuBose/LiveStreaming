@@ -11,12 +11,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.intigral.mobile.android.livestreaming.R;
 
-public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback,
-        MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl, View.OnClickListener {
+public class VideoPlayer extends AppCompatActivity implements SurfaceHolder.Callback,
+        MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl, View.OnClickListener,
+        MediaPlayer.OnInfoListener, MediaPlayer.OnSeekCompleteListener {
 
     private MediaPlayer mediaPlayer;
     private SurfaceHolder vidHolder;
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private Handler handler = new Handler();
     private boolean fullScreen = true;
     private DisplayMetrics displayMetrics;
+    private int seekTime;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -32,9 +36,13 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        seekTime = getIntent().getExtras().getInt("seek_time");
+
         findViewById(R.id.fullScreen).setOnClickListener(this);
         mediaController = new MediaController(this);
         vidSurface = findViewById(R.id.surfView);
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
         vidHolder = vidSurface.getHolder();
 
         displayMetrics = new DisplayMetrics();
@@ -45,6 +53,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
+        if (seekTime > 0)
+            mediaPlayer.seekTo(seekTime);
+
         mediaPlayer.start();
 
         mediaController.setMediaPlayer(this);
@@ -63,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         try {
             mediaPlayer = new MediaPlayer();
+            mediaPlayer.setOnInfoListener(this);
+            mediaPlayer.setOnSeekCompleteListener(this);
             mediaPlayer.setDisplay(vidHolder);
             mediaPlayer.setDataSource(getResources().getString(R.string.streaming_url));
             mediaPlayer.prepare();
@@ -125,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     public void seekTo(int i) {
         mediaPlayer.seekTo(i);
-
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -166,15 +179,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.fullScreen:
-                if(fullScreen){
+                if (fullScreen) {
                     int height = displayMetrics.heightPixels / 2;
                     int width = displayMetrics.widthPixels / 2;
                     RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
                     params.addRule(RelativeLayout.CENTER_IN_PARENT);
                     vidSurface.setLayoutParams(params);
-                }else {
+                } else {
                     int height = displayMetrics.heightPixels;
                     int width = displayMetrics.widthPixels;
                     RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
@@ -187,5 +200,24 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 break;
         }
 
+    }
+
+    @Override
+    public boolean onInfo(MediaPlayer mediaPlayer, int i, int i1) {
+        if (MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START == i) {
+            progressBar.setVisibility(View.GONE);
+        }
+        if (MediaPlayer.MEDIA_INFO_BUFFERING_START == i) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        if (MediaPlayer.MEDIA_INFO_BUFFERING_END == i) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        return false;
+    }
+
+    @Override
+    public void onSeekComplete(MediaPlayer mediaPlayer) {
+        progressBar.setVisibility(View.VISIBLE);
     }
 }
